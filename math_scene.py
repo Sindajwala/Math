@@ -189,7 +189,7 @@ class math2(Scene):
             start_y = func(start_x)
             dot = Dot(color=colors[i]).move_to(axes2.c2p(start_x, start_y))
 
-            # Animate the curve and the moving dot together
+            # # Animate the curve and the moving dot together
             # self.play(Create(dashed_curve),
             #           MoveAlongPath(dot, curve), 
             #           run_time=2
@@ -219,11 +219,11 @@ class math2(Scene):
         d0_t3 = MathTex('[0,5]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d0,RIGHT))
 
         d1.generate_target()
-        d1.target.shift([-3.02,-2,0])
+        d1.target.shift([-2.9,-2,0])
         d1_t3 = MathTex('[3,0]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d1,UP))
 
         d2.generate_target()
-        d2.target.shift([1.02,-2,0])
+        d2.target.shift([1.1,-2,0])
         d2_t3 = MathTex('[-3,0]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d2,UP))
 
 
@@ -266,33 +266,190 @@ class math2(Scene):
         dashed_curve2 = DashedVMobject(curve2, num_dashes=20)
 
         # Initial position of the dot
-        start_x = -3
-        start_y = pcurve(start_x)
-        dot2 = Dot(point=axes3.c2p(start_x, start_y), color=RED)
-        self.add(dot2)
+        bob = Dot(point=axes3.c2p(start_x, start_y), color=RED).scale(2)
+        rod = Line(start=axes3.c2p(0, 5), end=bob.get_center(), color=WHITE)
 
-        end_x = 3
-        end_y = pcurve(end_x)
-        end_point = axes3.c2p(end_x, end_y)
-
-        l3 = DashedLine(start=axes3.c2p(0, 3), end=end_point, dash_length=0.2)
+        rod.add_updater(lambda r: r.put_start_and_end_on(axes3.c2p(0, 5), bob.get_center()))
 
         # Animate the dot along the curve
-        self.play(Create(dashed_curve2),MoveAlongPath(dot2, curve2), run_time=4)
 
-        # Calculate the endpoint based on the final x value
-        
+        pendulum_animation = MoveAlongPath(bob, curve2, run_time=5, rate_func=there_and_back)
 
-        # Create the dashed line from the origin to the final dot position
-        
-
+        self.add(rod, bob)
+        self.play(AnimationGroup(pendulum_animation,pendulum_animation,pendulum_animation))
         self.wait(2)
         
+        self.play(Uncreate(bob),Uncreate(rod))
+        self.wait()
 
 
+        axes4 = Axes(
+            x_range=[-1, 13, 1],
+            y_range=[-4, 4, 1], 
+            x_length=14,  # Match the default scale of NumberPlane
+            y_length=8,   # Match the default scale of NumberPlane
+            axis_config={"color": WHITE},
+            tips=False
+        )
+        axes4.x_axis.set_color(BLACK)
+
+        axes5 = Axes(
+            x_range=[-4, 10, 1],
+            y_range=[-4, 4, 1], 
+            x_length=14,  # Match the default scale of NumberPlane
+            y_length=8,   # Match the default scale of NumberPlane
+            axis_config={"color": WHITE},
+            tips=False
+        )
+
+        d0.generate_target()
+        d0.target.shift([-6,-1.5,0])
+        d0_t4 = MathTex('[0,5]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d0,RIGHT+UP))
+
+        d2.generate_target()
+        d2.target.shift([-3.1,2,0])
+        d1_t4 = MathTex('[3,0]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d1,RIGHT+UP))
+
+        d1.generate_target()
+        d1.target.shift([-9.1,0.5,0])
+        d2_t3 = MathTex('[-3,0]').scale(0.7).add_updater(lambda mob: dot_updater(mob,d2,RIGHT+UP))
+
+        convex1_eq = lambda x: (-1 * math.sqrt(16 - x**2)) + 3.48
+        convex1 = axes5.plot_parametric_curve(lambda t: np.array([convex1_eq(t),t,0]),
+                                             t_range=[-2, 2],
+                                             color=BLUE
+                                            )
+
+        convex2_eq = lambda x: (1 * math.sqrt(16 - x**2)) - 3.48
+        convex2 = axes5.plot_parametric_curve(lambda t: np.array([convex2_eq(t),t,0]),
+                                             t_range=[-2, 2],
+                                             color=BLUE
+                                            )
+
+
+        self.play(ReplacementTransform(axes3,axes4),
+                #   ReplacementTransform(plot2,plot3),
+                  MoveToTarget(d0),
+                #   ReplacementTransform(d2_t2,d2_t3),
+                  MoveToTarget(d1),
+                #   ReplacementTransform(d1_t2,d1_t3),
+                  MoveToTarget(d2),
+                #   ReplacementTransform(d0_t2,d0_t3),
+                ReplacementTransform(curve2, convex1),
+                Create(convex2)
+                  )
+        self.wait(2)
         
+        def create_line_between_axes(axes_start, axes_end, start_point, end_point, color=WHITE, dash_length= 0.1):
+            start = axes_start.c2p(*start_point)
+            end = axes_end.c2p(*end_point)
+            return DashedLine(start, end, color=color)
+
+        axes6 = Axes(
+            x_range=[-7, 7, 1],
+            y_range=[-4, 4, 1], 
+            x_length=14,  # Match the default scale of NumberPlane
+            y_length=8,   # Match the default scale of NumberPlane
+            axis_config={"color": WHITE},
+            tips=False
+        )
+
+        axes7 = Axes(
+            x_range=[-10, 3, 1],
+            y_range=[-4, 4, 1], 
+            x_length=14,  # Match the default scale of NumberPlane
+            y_length=8,   # Match the default scale of NumberPlane
+            axis_config={"color": WHITE},
+            tips=False
+        )
 
 
 
+        lray1 = create_line_between_axes(axes4, axes5, [0,1.5,0], [0,1.5,0], color = WHITE, dash_length= 0.1)
+        lray2 = create_line_between_axes(axes4, axes5, [0,0,0], [0,0,0], color = BLUE, dash_length= 0.1)
+        lray3 = create_line_between_axes(axes4, axes5, [0,-1.5,0], [0,-1.5,0], color = RED, dash_length= 0.1)
+
+        lray4 = create_line_between_axes(axes5, axes6, [0,1.5,0], [0,0.75,0], color = WHITE, dash_length= 0.1)
+        lray5 = create_line_between_axes(axes5, axes6, [0,0,0], [0,0,0], color = BLUE, dash_length= 0.1)
+        lray6 = create_line_between_axes(axes5, axes6, [0,-1.5,0], [0,-0.75,0], color = RED, dash_length= 0.1)
+
+        lray7 = create_line_between_axes(axes6, axes7, [0,0.75,0], [0,1.5,0], color = WHITE, dash_length= 0.1)
+        lray8 = create_line_between_axes(axes6, axes7, [0,0,0], [0,0,0], color = BLUE, dash_length= 0.1)
+        lray9 = create_line_between_axes(axes6, axes7, [0,-0.75,0], [0,-1.5,0], color = RED, dash_length= 0.1)
+
+        concave1_eq = lambda x: (-1 * math.sqrt(16 - x**2)) + 4.2
+        concave1 = axes6.plot_parametric_curve(lambda t: np.array([concave1_eq(t), t, 0]), 
+                                                t_range=[-2, 2], 
+                                                color=WHITE)
+
+        concave2_eq = lambda x: (1 * math.sqrt(16 - x**2)) - 4.2
+        concave2 = axes6.plot_parametric_curve(lambda t: np.array([concave2_eq(t), t, 0]), 
+                                               t_range=[-2, 2], 
+                                               color=WHITE)
+
+        concave3 = Line(start=axes6.c2p(-0.75, 2, 0), 
+                          end=axes6.c2p(0.75, 2, 0), 
+                          color=WHITE)
+
+        concave4 = Line(start=axes6.c2p(-0.75, -2, 0), 
+                          end=axes6.c2p(0.75, -2, 0), 
+                          color=WHITE)
 
 
+        planner_eq = lambda x: (1 * math.sqrt(36 - x**2)) - 6.2
+        planner1 = axes7.plot_parametric_curve(lambda t: np.array([planner_eq(t), t, 0]), 
+                                               t_range=[-2, 2], 
+                                               color=WHITE)
+        planner2 = Line(start=axes7.c2p(-0.52, 2, 0), 
+                          end=axes7.c2p(0.2, 2, 0), 
+                          color=WHITE)
+
+        planner3 = Line(start=axes7.c2p(-0.52, -2, 0), 
+                          end=axes7.c2p(0.2, -2, 0), 
+                          color=WHITE)
+
+        planner4 = Line(start=axes7.c2p(0.2, -2, 0), 
+                          end=axes7.c2p(0.2, 2, 0), 
+                          color=WHITE)
+
+
+        self.play(Create(lray1),
+                  Create(lray2),
+                  Create(lray3),
+                  Create(concave1),
+                  Create(concave2),
+                  Create(concave3),
+                  Create(concave4),
+                  Create(lray4),
+                  Create(lray5),
+                  Create(lray6),
+                  Create(planner1),
+                  Create(planner2),
+                  Create(planner3),
+                  Create(planner4),
+                  Create(lray7),
+                  Create(lray8),
+                  Create(lray9),
+
+
+        )
+
+        self.wait()
+
+        self.play(
+            *[obj.animate.shift(LEFT * 6).set_opacity(0) for obj in [
+                lray1, lray2, lray3, concave1, concave2, concave3, concave4,
+                lray4, lray5, lray6, planner1, planner2, planner3, planner4
+            ]],
+            run_time=3
+        )
+
+        # Move lray7, lray8, lray9 to axes4 and keep them visible
+        self.play(
+            lray7.animate.move_to(axes4.c2p(0, 1.5, 0)),
+            lray8.animate.move_to(axes4.c2p(0, 0, 0)),
+            lray9.animate.move_to(axes4.c2p(0, -1.5, 0)),
+            run_time=2
+        )
+
+        self.wait()
