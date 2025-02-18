@@ -336,6 +336,7 @@ class math2(Scene):
                   MoveToTarget(d2),
                 #   ReplacementTransform(d0_t2,d0_t3),
                 ReplacementTransform(curve2, convex1),
+                Uncreate(plot3),
                 Create(convex2)
                   )
         self.wait(2)
@@ -377,6 +378,10 @@ class math2(Scene):
         lray8 = create_line_between_axes(axes6, axes7, [0,0,0], [0,0,0], color = BLUE, dash_length= 0.1)
         lray9 = create_line_between_axes(axes6, axes7, [0,-0.75,0], [0,-1.5,0], color = RED, dash_length= 0.1)
 
+        lray10 = create_line_between_axes(axes7, axes7, [0,1.5,0], [2,1.5,0], color = WHITE, dash_length= 0.1)
+        lray11 = create_line_between_axes(axes7, axes7, [0,0,0], [2,0,0], color = BLUE, dash_length= 0.1)
+        lray12 = create_line_between_axes(axes7, axes7, [0,-1.5,0], [2,-1.5,0], color = RED, dash_length= 0.1)
+
         concave1_eq = lambda x: (-1 * math.sqrt(16 - x**2)) + 4.2
         concave1 = axes6.plot_parametric_curve(lambda t: np.array([concave1_eq(t), t, 0]), 
                                                 t_range=[-2, 2], 
@@ -412,44 +417,117 @@ class math2(Scene):
                           end=axes7.c2p(0.2, 2, 0), 
                           color=WHITE)
 
+        d0.generate_target()
+        d0.target.shift([3,0,0])
 
-        self.play(Create(lray1),
+        d1.generate_target()
+        d1.target.shift([3,0,0])
+
+        d2.generate_target()
+        d2.target.shift([3,0,0])
+
+        self.play(
+                 Create(lray1),
                   Create(lray2),
                   Create(lray3),
-                  Create(concave1),
-                  Create(concave2),
-                  Create(concave3),
-                  Create(concave4),
-                  Create(lray4),
-                  Create(lray5),
-                  Create(lray6),
-                  Create(planner1),
-                  Create(planner2),
-                  Create(planner3),
-                  Create(planner4),
-                  Create(lray7),
-                  Create(lray8),
-                  Create(lray9),
+                  MoveToTarget(d0),
+                  MoveToTarget(d1),
+                  MoveToTarget(d2),
 
-
+                #   Create(concave1),
+                #   Create(concave2),
+                #   Create(concave3),
+                #   Create(concave4),
+                #   Create(lray4),
+                #   Create(lray5),
+                #   Create(lray6),
+                #   Create(planner1),
+                #   Create(planner2),
+                #   Create(planner3),
+                #   Create(planner4),
+                #   Create(lray7),
+                #   Create(lray8),
+                #   Create(lray9),
+                #   Create(lray10),
+                #   Create(lray11),
+                #   Create(lray12),
         )
 
         self.wait()
 
+        d0.generate_target()
+        d0.target.shift([3,-0.75,0])
+
+        d1.generate_target()
+        d1.target.shift([3,0.75,0])
+
+        d2.generate_target()
+        d2.target.shift([3,0,0])
+
+        self.play(
+            Create(concave1),
+            Create(concave2),
+            Create(concave3),
+            Create(concave4),
+            Create(lray4),
+            Create(lray5),
+            Create(lray6),
+            MoveToTarget(d0),
+            MoveToTarget(d1),
+            MoveToTarget(d2),
+
+        )
+
+        self.wait()
+        
+        d0.generate_target()
+        d0.target.shift([3.75,0.75,0])
+
+        d1.generate_target()
+        d1.target.shift([3.75,-0.75,0])
+
+        d2.generate_target()
+        d2.target.shift([3.75,0,0])
+
+        self.play(
+            Create(planner1),
+            Create(planner2),
+            Create(planner3),
+            Create(planner4),
+            Create(lray7),
+            Create(lray8),
+            Create(lray9),
+            MoveToTarget(d0),
+            MoveToTarget(d1),
+            MoveToTarget(d2),
+        )
+
+        self.wait()
+
+        self.play(
+             Create(lray10),
+             Create(lray11),
+             Create(lray12),
+        )
         self.play(
             *[obj.animate.shift(LEFT * 6).set_opacity(0) for obj in [
-                lray1, lray2, lray3, concave1, concave2, concave3, concave4,
-                lray4, lray5, lray6, planner1, planner2, planner3, planner4
+                lray1, lray2, lray3,convex1,convex2, concave1, concave2, concave3, concave4,
+                lray4, lray5, lray6, planner1, planner2, planner3, planner4, lray7, lray8, lray9
             ]],
+            
+
+            lray10.animate.move_to(axes4.c2p(1, 1.5, 0)),
+            lray11.animate.move_to(axes4.c2p(1, 0, 0)),
+            lray12.animate.move_to(axes4.c2p(1, -1.5, 0)),
             run_time=3
-        )
 
-        # Move lray7, lray8, lray9 to axes4 and keep them visible
-        self.play(
-            lray7.animate.move_to(axes4.c2p(0, 1.5, 0)),
-            lray8.animate.move_to(axes4.c2p(0, 0, 0)),
-            lray9.animate.move_to(axes4.c2p(0, -1.5, 0)),
-            run_time=2
         )
-
+            
         self.wait()
+
+
+        acwave1 = axes7.plot(lambda t: 1.5 * math.sin(20 * PI * t), color=RED)
+
+        self.play(
+            Create(acwave1)
+        )
